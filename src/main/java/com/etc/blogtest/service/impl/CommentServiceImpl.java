@@ -25,7 +25,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> list(Map<String, Object> map) {
-        System.out.println("Test resolve");
+        System.out.println("Test");
         return commentDao.list(map);
     }
 
