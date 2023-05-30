@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.blogtest.dao.ThumbsUpDao">
+
+    <resultMap type="com.etc.blogtest.entity.ThumbsUp" id="ThumbsUpMap">
+        <result property="blogId" column="blog_id" jdbcType="INTEGER"/>
+        <result property="uid" column="uid" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ThumbsUpMap">
+        select
+          blog_id, uid, create_time
+        from thumbs_up
+        where blog_id = #{blogId}
+    </select>
+
+
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from thumbs_up
+        <where>
+            <if test="blogId != null">
+                and blog_id = #{blogId}
+            </if>
+            <if test="uid != null">
+                and uid = #{uid}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="blogId" useGeneratedKeys="true">
+        insert into thumbs_up(create_time)
+        values (#{createTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="blogId" useGeneratedKeys="true">
+        insert into thumbs_up(create_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.createTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="blogId" useGeneratedKeys="true">
+        insert into thumbs_up(create_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.createTime})
+        </foreach>
+        on duplicate key update
+        create_time = values(create_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update thumbs_up
+        <set>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+        </set>
+        where blog_id = #{blogId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from thumbs_up where blog_id = #{blogId}
+    </delete>
+
+</mapper>
+

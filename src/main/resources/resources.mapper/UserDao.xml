@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.blogtest.dao.UserDao">
+
+    <resultMap type="com.etc.blogtest.entity.User" id="UserMap">
+        <result property="uid" column="uid" jdbcType="INTEGER"/>
+        <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="lastIp" column="last_ip" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="ipSource" column="ip_source" jdbcType="VARCHAR"/>
+        <result property="loginType" column="login_type" jdbcType="INTEGER"/>
+        <result property="lastLoginTime" column="last_login_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="UserMap">
+        select
+          uid, nickname, username, password, email, avatar, create_time, update_time, last_ip, status, ip_source, login_type, last_login_time
+        from user
+        where uid = #{uid}
+    </select>
+    <!--查询-->
+    <select id="login" resultMap="UserMap" parameterType="map">
+        select
+          uid, nickname, username, password, email, avatar, create_time, update_time, last_ip, status, ip_source, login_type, last_login_time
+        from user
+        where username = #{username} and password=#{password}
+    </select>
+
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from user
+        <where>
+            <if test="uid != null">
+                and uid = #{uid}
+            </if>
+            <if test="nickname != null and nickname != ''">
+                and nickname = #{nickname}
+            </if>
+            <if test="username != null and username != ''">
+                and username = #{username}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email}
+            </if>
+            <if test="avatar != null and avatar != ''">
+                and avatar = #{avatar}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="lastIp != null and lastIp != ''">
+                and last_ip = #{lastIp}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="ipSource != null and ipSource != ''">
+                and ip_source = #{ipSource}
+            </if>
+            <if test="loginType != null">
+                and login_type = #{loginType}
+            </if>
+            <if test="lastLoginTime != null">
+                and last_login_time = #{lastLoginTime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="uid" useGeneratedKeys="true">
+        insert into user(nickname, username, password, email, avatar, create_time, update_time, last_ip, status, ip_source, login_type, last_login_time)
+        values (#{nickname}, #{username}, #{password}, #{email}, #{avatar}, #{createTime}, #{updateTime}, #{lastIp}, #{status}, #{ipSource}, #{loginType}, #{lastLoginTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="uid" useGeneratedKeys="true">
+        insert into user(nickname, username, password, email, avatar, create_time, update_time, last_ip, status, ip_source, login_type, last_login_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.nickname}, #{entity.username}, #{entity.password}, #{entity.email}, #{entity.avatar}, #{entity.createTime}, #{entity.updateTime}, #{entity.lastIp}, #{entity.status}, #{entity.ipSource}, #{entity.loginType}, #{entity.lastLoginTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="uid" useGeneratedKeys="true">
+        insert into user(nickname, username, password, email, avatar, create_time, update_time, last_ip, status, ip_source, login_type, last_login_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.nickname}, #{entity.username}, #{entity.password}, #{entity.email}, #{entity.avatar}, #{entity.createTime}, #{entity.updateTime}, #{entity.lastIp}, #{entity.status}, #{entity.ipSource}, #{entity.loginType}, #{entity.lastLoginTime})
+        </foreach>
+        on duplicate key update
+        nickname = values(nickname),
+        username = values(username),
+        password = values(password),
+        email = values(email),
+        avatar = values(avatar),
+        create_time = values(create_time),
+        update_time = values(update_time),
+        last_ip = values(last_ip),
+        status = values(status),
+        ip_source = values(ip_source),
+        login_type = values(login_type),
+        last_login_time = values(last_login_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update user
+        <set>
+            <if test="nickname != null and nickname != ''">
+                nickname = #{nickname},
+            </if>
+            <if test="username != null and username != ''">
+                username = #{username},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="avatar != null and avatar != ''">
+                avatar = #{avatar},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="lastIp != null and lastIp != ''">
+                last_ip = #{lastIp},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="ipSource != null and ipSource != ''">
+                ip_source = #{ipSource},
+            </if>
+            <if test="loginType != null">
+                login_type = #{loginType},
+            </if>
+            <if test="lastLoginTime != null">
+                last_login_time = #{lastLoginTime},
+            </if>
+        </set>
+        where uid = #{uid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from user where uid = #{uid}
+    </delete>
+
+</mapper>
+

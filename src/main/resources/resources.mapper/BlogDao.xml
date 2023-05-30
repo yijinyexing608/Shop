@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.blogtest.dao.BlogDao">
+
+    <resultMap type="com.etc.blogtest.entity.Blog" id="BlogMap">
+        <result property="blogId" column="blog_id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="uid" column="uid" jdbcType="INTEGER"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="published" column="published" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="views" column="views" jdbcType="INTEGER"/>
+        <result property="typeId" column="type_id" jdbcType="INTEGER"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="commentAble" column="comment_able" jdbcType="INTEGER"/>
+        <result property="copyright" column="copyright" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BlogMap">
+        select
+          blog_id, title, uid, content, create_time, published, update_time, views, type_id, description, comment_able, copyright
+        from blog
+        where blog_id = #{blogId}
+    </select>
+
+
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from blog
+        <where>
+            <if test="blogId != null">
+                and blog_id = #{blogId}
+            </if>
+            <if test="title != null and title != ''">
+                and title = #{title}
+            </if>
+            <if test="uid != null">
+                and uid = #{uid}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="published != null">
+                and published = #{published}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="views != null">
+                and views = #{views}
+            </if>
+            <if test="typeId != null">
+                and type_id = #{typeId}
+            </if>
+            <if test="description != null and description != ''">
+                and description = #{description}
+            </if>
+            <if test="commentAble != null">
+                and comment_able = #{commentAble}
+            </if>
+            <if test="copyright != null">
+                and copyright = #{copyright}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="blogId" useGeneratedKeys="true">
+        insert into blog(title, uid, content, create_time, published, update_time, views, type_id, description, comment_able, copyright)
+        values (#{title}, #{uid}, #{content}, #{createTime}, #{published}, #{updateTime}, #{views}, #{typeId}, #{description}, #{commentAble}, #{copyright})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="blogId" useGeneratedKeys="true">
+        insert into blog(title, uid, content, create_time, published, update_time, views, type_id, description, comment_able, copyright)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.title}, #{entity.uid}, #{entity.content}, #{entity.createTime}, #{entity.published}, #{entity.updateTime}, #{entity.views}, #{entity.typeId}, #{entity.description}, #{entity.commentAble}, #{entity.copyright})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="blogId" useGeneratedKeys="true">
+        insert into blog(title, uid, content, create_time, published, update_time, views, type_id, description, comment_able, copyright)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.title}, #{entity.uid}, #{entity.content}, #{entity.createTime}, #{entity.published}, #{entity.updateTime}, #{entity.views}, #{entity.typeId}, #{entity.description}, #{entity.commentAble}, #{entity.copyright})
+        </foreach>
+        on duplicate key update
+        title = values(title),
+        uid = values(uid),
+        content = values(content),
+        create_time = values(create_time),
+        published = values(published),
+        update_time = values(update_time),
+        views = values(views),
+        type_id = values(type_id),
+        description = values(description),
+        comment_able = values(comment_able),
+        copyright = values(copyright)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update blog
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="uid != null">
+                uid = #{uid},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="published != null">
+                published = #{published},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="views != null">
+                views = #{views},
+            </if>
+            <if test="typeId != null">
+                type_id = #{typeId},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="commentAble != null">
+                comment_able = #{commentAble},
+            </if>
+            <if test="copyright != null">
+                copyright = #{copyright},
+            </if>
+        </set>
+        where blog_id = #{blogId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from blog where blog_id = #{blogId}
+    </delete>
+
+</mapper>
+

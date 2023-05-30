@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.blogtest.dao.TbRoleResourceDao">
+
+    <resultMap type="com.etc.blogtest.entity.TbRoleResource" id="TbRoleResourceMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="rid" column="rid" jdbcType="INTEGER"/>
+        <result property="resourceId" column="resource_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TbRoleResourceMap">
+        select
+          id, rid, resource_id
+        from tb_role_resource
+        where id = #{id}
+    </select>
+
+
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from tb_role_resource
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="rid != null">
+                and rid = #{rid}
+            </if>
+            <if test="resourceId != null">
+                and resource_id = #{resourceId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into tb_role_resource(rid, resource_id)
+        values (#{rid}, #{resourceId})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tb_role_resource(rid, resource_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.rid}, #{entity.resourceId})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tb_role_resource(rid, resource_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.rid}, #{entity.resourceId})
+        </foreach>
+        on duplicate key update
+        rid = values(rid),
+        resource_id = values(resource_id)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update tb_role_resource
+        <set>
+            <if test="rid != null">
+                rid = #{rid},
+            </if>
+            <if test="resourceId != null">
+                resource_id = #{resourceId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from tb_role_resource where id = #{id}
+    </delete>
+
+</mapper>
+

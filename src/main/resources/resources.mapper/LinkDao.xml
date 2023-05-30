@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.blogtest.dao.LinkDao">
+
+    <resultMap type="com.etc.blogtest.entity.Link" id="LinkMap">
+        <result property="linkId" column="link_id" jdbcType="INTEGER"/>
+        <result property="linkName" column="link_name" jdbcType="VARCHAR"/>
+        <result property="avatarLink" column="avatar_link" jdbcType="VARCHAR"/>
+        <result property="blogLink" column="blog_link" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="LinkMap">
+        select
+          link_id, link_name, avatar_link, blog_link, description, create_time, status
+        from link
+        where link_id = #{linkId}
+    </select>
+
+
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from link
+        <where>
+            <if test="linkId != null">
+                and link_id = #{linkId}
+            </if>
+            <if test="linkName != null and linkName != ''">
+                and link_name = #{linkName}
+            </if>
+            <if test="avatarLink != null and avatarLink != ''">
+                and avatar_link = #{avatarLink}
+            </if>
+            <if test="blogLink != null and blogLink != ''">
+                and blog_link = #{blogLink}
+            </if>
+            <if test="description != null and description != ''">
+                and description = #{description}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="linkId" useGeneratedKeys="true">
+        insert into link(link_name, avatar_link, blog_link, description, create_time, status)
+        values (#{linkName}, #{avatarLink}, #{blogLink}, #{description}, #{createTime}, #{status})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="linkId" useGeneratedKeys="true">
+        insert into link(link_name, avatar_link, blog_link, description, create_time, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.linkName}, #{entity.avatarLink}, #{entity.blogLink}, #{entity.description}, #{entity.createTime}, #{entity.status})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="linkId" useGeneratedKeys="true">
+        insert into link(link_name, avatar_link, blog_link, description, create_time, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.linkName}, #{entity.avatarLink}, #{entity.blogLink}, #{entity.description}, #{entity.createTime}, #{entity.status})
+        </foreach>
+        on duplicate key update
+        link_name = values(link_name),
+        avatar_link = values(avatar_link),
+        blog_link = values(blog_link),
+        description = values(description),
+        create_time = values(create_time),
+        status = values(status)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update link
+        <set>
+            <if test="linkName != null and linkName != ''">
+                link_name = #{linkName},
+            </if>
+            <if test="avatarLink != null and avatarLink != ''">
+                avatar_link = #{avatarLink},
+            </if>
+            <if test="blogLink != null and blogLink != ''">
+                blog_link = #{blogLink},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where link_id = #{linkId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from link where link_id = #{linkId}
+    </delete>
+
+</mapper>
+

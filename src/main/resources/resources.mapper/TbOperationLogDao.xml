@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.blogtest.dao.TbOperationLogDao">
+
+    <resultMap type="com.etc.blogtest.entity.TbOperationLog" id="TbOperationLogMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="optModule" column="opt_module" jdbcType="VARCHAR"/>
+        <result property="optType" column="opt_type" jdbcType="VARCHAR"/>
+        <result property="optUrl" column="opt_url" jdbcType="VARCHAR"/>
+        <result property="optMethod" column="opt_method" jdbcType="VARCHAR"/>
+        <result property="optDesc" column="opt_desc" jdbcType="VARCHAR"/>
+        <result property="requestParam" column="request_param" jdbcType="VARCHAR"/>
+        <result property="requestMethod" column="request_method" jdbcType="VARCHAR"/>
+        <result property="responseData" column="response_data" jdbcType="VARCHAR"/>
+        <result property="uid" column="uid" jdbcType="INTEGER"/>
+        <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+        <result property="ipAddress" column="ip_address" jdbcType="VARCHAR"/>
+        <result property="ipSource" column="ip_source" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TbOperationLogMap">
+        select
+          id, opt_module, opt_type, opt_url, opt_method, opt_desc, request_param, request_method, response_data, uid, nickname, ip_address, ip_source, create_time, update_time
+        from tb_operation_log
+        where id = #{id}
+    </select>
+
+
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from tb_operation_log
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="optModule != null and optModule != ''">
+                and opt_module = #{optModule}
+            </if>
+            <if test="optType != null and optType != ''">
+                and opt_type = #{optType}
+            </if>
+            <if test="optUrl != null and optUrl != ''">
+                and opt_url = #{optUrl}
+            </if>
+            <if test="optMethod != null and optMethod != ''">
+                and opt_method = #{optMethod}
+            </if>
+            <if test="optDesc != null and optDesc != ''">
+                and opt_desc = #{optDesc}
+            </if>
+            <if test="requestParam != null and requestParam != ''">
+                and request_param = #{requestParam}
+            </if>
+            <if test="requestMethod != null and requestMethod != ''">
+                and request_method = #{requestMethod}
+            </if>
+            <if test="responseData != null and responseData != ''">
+                and response_data = #{responseData}
+            </if>
+            <if test="uid != null">
+                and uid = #{uid}
+            </if>
+            <if test="nickname != null and nickname != ''">
+                and nickname = #{nickname}
+            </if>
+            <if test="ipAddress != null and ipAddress != ''">
+                and ip_address = #{ipAddress}
+            </if>
+            <if test="ipSource != null and ipSource != ''">
+                and ip_source = #{ipSource}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into tb_operation_log(opt_module, opt_type, opt_url, opt_method, opt_desc, request_param, request_method, response_data, uid, nickname, ip_address, ip_source, create_time, update_time)
+        values (#{optModule}, #{optType}, #{optUrl}, #{optMethod}, #{optDesc}, #{requestParam}, #{requestMethod}, #{responseData}, #{uid}, #{nickname}, #{ipAddress}, #{ipSource}, #{createTime}, #{updateTime})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tb_operation_log(opt_module, opt_type, opt_url, opt_method, opt_desc, request_param, request_method, response_data, uid, nickname, ip_address, ip_source, create_time, update_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.optModule}, #{entity.optType}, #{entity.optUrl}, #{entity.optMethod}, #{entity.optDesc}, #{entity.requestParam}, #{entity.requestMethod}, #{entity.responseData}, #{entity.uid}, #{entity.nickname}, #{entity.ipAddress}, #{entity.ipSource}, #{entity.createTime}, #{entity.updateTime})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into tb_operation_log(opt_module, opt_type, opt_url, opt_method, opt_desc, request_param, request_method, response_data, uid, nickname, ip_address, ip_source, create_time, update_time)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.optModule}, #{entity.optType}, #{entity.optUrl}, #{entity.optMethod}, #{entity.optDesc}, #{entity.requestParam}, #{entity.requestMethod}, #{entity.responseData}, #{entity.uid}, #{entity.nickname}, #{entity.ipAddress}, #{entity.ipSource}, #{entity.createTime}, #{entity.updateTime})
+        </foreach>
+        on duplicate key update
+        opt_module = values(opt_module),
+        opt_type = values(opt_type),
+        opt_url = values(opt_url),
+        opt_method = values(opt_method),
+        opt_desc = values(opt_desc),
+        request_param = values(request_param),
+        request_method = values(request_method),
+        response_data = values(response_data),
+        uid = values(uid),
+        nickname = values(nickname),
+        ip_address = values(ip_address),
+        ip_source = values(ip_source),
+        create_time = values(create_time),
+        update_time = values(update_time)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update tb_operation_log
+        <set>
+            <if test="optModule != null and optModule != ''">
+                opt_module = #{optModule},
+            </if>
+            <if test="optType != null and optType != ''">
+                opt_type = #{optType},
+            </if>
+            <if test="optUrl != null and optUrl != ''">
+                opt_url = #{optUrl},
+            </if>
+            <if test="optMethod != null and optMethod != ''">
+                opt_method = #{optMethod},
+            </if>
+            <if test="optDesc != null and optDesc != ''">
+                opt_desc = #{optDesc},
+            </if>
+            <if test="requestParam != null and requestParam != ''">
+                request_param = #{requestParam},
+            </if>
+            <if test="requestMethod != null and requestMethod != ''">
+                request_method = #{requestMethod},
+            </if>
+            <if test="responseData != null and responseData != ''">
+                response_data = #{responseData},
+            </if>
+            <if test="uid != null">
+                uid = #{uid},
+            </if>
+            <if test="nickname != null and nickname != ''">
+                nickname = #{nickname},
+            </if>
+            <if test="ipAddress != null and ipAddress != ''">
+                ip_address = #{ipAddress},
+            </if>
+            <if test="ipSource != null and ipSource != ''">
+                ip_source = #{ipSource},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from tb_operation_log where id = #{id}
+    </delete>
+
+</mapper>
+

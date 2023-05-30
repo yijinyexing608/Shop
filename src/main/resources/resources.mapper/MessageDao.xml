@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.blogtest.dao.MessageDao">
+
+    <resultMap type="com.etc.blogtest.entity.Message" id="MessageMap">
+        <result property="mid" column="mid" jdbcType="INTEGER"/>
+        <result property="time" column="time" jdbcType="VARCHAR"/>
+        <result property="messageContent" column="message_content" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
+        <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+        <result property="ip" column="ip" jdbcType="VARCHAR"/>
+        <result property="ipSource" column="ip_source" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="MessageMap">
+        select
+          mid, time, message_content, create_time, avatar, nickname, ip, ip_source
+        from message
+        where mid = #{mid}
+    </select>
+
+    <!--分页查询用户留言-->
+    <select id="listAll" resultType="map" parameterType="map">
+        select  mid, time, message_content, create_time, avatar, nickname, ip, ip_source from
+        message
+        <where>
+            <if test="keyword!=null and keyword !='' ">
+                nickname like concat('%',#{keyword},'%')
+            </if>
+        </where>
+
+    </select>
+
+
+<!--分页查询留言-->
+    <select id="list" resultType="message" parameterType="map">
+        select  mid, time, message_content, create_time, avatar, nickname, ip, ip_source from
+        message
+        <where>
+            <if test="keyword!=null and keyword !='' ">
+                message_content like concat('%',#{keyword},'%')
+            </if>
+        </where>
+
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from message
+        <where>
+            <if test="mid != null">
+                and mid = #{mid}
+            </if>
+            <if test="time != null and time != ''">
+                and time = #{time}
+            </if>
+            <if test="messageContent != null and messageContent != ''">
+                and message_content = #{messageContent}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="avatar != null and avatar != ''">
+                and avatar = #{avatar}
+            </if>
+            <if test="nickname != null and nickname != ''">
+                and nickname = #{nickname}
+            </if>
+            <if test="ip != null and ip != ''">
+                and ip = #{ip}
+            </if>
+            <if test="ipSource != null and ipSource != ''">
+                and ip_source = #{ipSource}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="mid" useGeneratedKeys="true">
+        insert into message(time, message_content, avatar, nickname
+        <trim suffix=")" prefix="," suffixOverrides=",">
+<if test="ip != null || ip !='' ">
+    ip,
+</if>
+            <if test="ipSource != null || ipSource !='' ">
+                ip_source
+            </if>
+        </trim>
+        values (#{time}, #{messageContent},  #{avatar}, #{nickname}
+        <trim suffix=")" prefix=","  suffixOverrides=",">
+
+            <if test="ip != null || ip !='' ">
+                #{ip},
+            </if>
+            <if test="ipSource != null || ipSource !='' ">
+                #{ipSource},
+            </if>
+         </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="mid" useGeneratedKeys="true">
+        insert into message(time, message_content, create_time, avatar, nickname, ip, ip_source)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.time}, #{entity.messageContent}, #{entity.createTime}, #{entity.avatar}, #{entity.nickname}, #{entity.ip}, #{entity.ipSource})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="mid" useGeneratedKeys="true">
+        insert into message(time, message_content, create_time, avatar, nickname, ip, ip_source)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.time}, #{entity.messageContent}, #{entity.createTime}, #{entity.avatar}, #{entity.nickname}, #{entity.ip}, #{entity.ipSource})
+        </foreach>
+        on duplicate key update
+        time = values(time),
+        message_content = values(message_content),
+        create_time = values(create_time),
+        avatar = values(avatar),
+        nickname = values(nickname),
+        ip = values(ip),
+        ip_source = values(ip_source)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update message
+        <set>
+            <if test="time != null and time != ''">
+                time = #{time},
+            </if>
+            <if test="messageContent != null and messageContent != ''">
+                message_content = #{messageContent},
+            </if>
+
+            <if test="avatar != null and avatar != ''">
+                avatar = #{avatar},
+            </if>
+            <if test="nickname != null and nickname != ''">
+                nickname = #{nickname},
+            </if>
+            <if test="ip != null and ip != ''">
+                ip = #{ip},
+            </if>
+            <if test="ipSource != null and ipSource != ''">
+                ip_source = #{ipSource},
+            </if>
+        </set>
+        where mid = #{mid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from message where mid = #{mid}
+    </delete>
+
+</mapper>
+

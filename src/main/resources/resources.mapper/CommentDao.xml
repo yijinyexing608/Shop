@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.blogtest.dao.CommentDao">
+
+    <resultMap type="com.etc.blogtest.entity.Comment" id="CommentMap">
+        <result property="commentId" column="comment_id" jdbcType="INTEGER"/>
+        <result property="uid" column="uid" jdbcType="INTEGER"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="blogId" column="blog_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="CommentMap">
+        select
+          comment_id, uid, content, create_time, blog_id
+        from comment
+        where comment_id = #{commentId}
+    </select>
+
+
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from comment
+        <where>
+            <if test="commentId != null">
+                and comment_id = #{commentId}
+            </if>
+            <if test="uid != null">
+                and uid = #{uid}
+            </if>
+            <if test="content != null and content != ''">
+                and content = #{content}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="blogId != null">
+                and blog_id = #{blogId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="commentId" useGeneratedKeys="true" parameterType="comment">
+        insert into comment(uid, content, blog_id)
+        values (#{uid}, #{content},  #{blogId})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="commentId" useGeneratedKeys="true">
+        insert into comment(uid, content, create_time, blog_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+        (#{entity.uid}, #{entity.content}, #{entity.createTime}, #{entity.blogId})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="commentId" useGeneratedKeys="true">
+        insert into comment(uid, content, create_time, blog_id)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.uid}, #{entity.content}, #{entity.createTime}, #{entity.blogId})
+        </foreach>
+        on duplicate key update
+        uid = values(uid),
+        content = values(content),
+        create_time = values(create_time),
+        blog_id = values(blog_id)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update" parameterType="comment">
+        update comment
+        <set>
+<!--            <if test="uid != null">-->
+<!--                uid = #{uid},-->
+<!--            </if>-->
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+<!--            <if test="createTime != null">-->
+<!--                create_time = #{createTime},-->
+<!--            </if>-->
+<!--            <if test="blogId != null">-->
+<!--                blog_id = #{blogId},-->
+<!--            </if>-->
+        </set>
+        where comment_id = #{commentId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from comment where comment_id = #{commentId}
+    </delete>
+    <!--分页查询留言-->
+    <select id="list" resultType="comment" parameterType="map">
+        select
+        comment_id, uid, content, create_time, blog_id
+        from comment
+        <where>
+            <if test="keyword!=null and keyword !='' ">
+                content like concat('%',#{keyword},'%')
+            </if>
+        </where>
+
+    </select>
+
+    <!--分页查询所有留言-->
+    <select id="listAll" resultType="map" parameterType="map">
+        select c.comment_id,
+        u.nickname, c.content, c.create_time,b.title
+        from comment c
+        left join user u on c.uid=u.uid
+        left join blog b on b.blog_id=c.blog_id
+        <where>
+            <if test="keyword!=null and keyword !='' ">
+                u.nickname like concat('%',#{keyword},'%')
+            </if>
+        </where>
+
+    </select>
+</mapper>
+
